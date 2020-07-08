@@ -61,8 +61,6 @@ provisioner:
         bootstrap: false
 """
 
-    }
-
     withDockerServer([uri: dockerHost()]) {
         stage('Plaintext') {
             sh '''
