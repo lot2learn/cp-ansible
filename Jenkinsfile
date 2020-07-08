@@ -49,7 +49,7 @@ def job = {
         break
     }
 
-    writeFile file: "roles/confluent.test/base-config.yml" text: """---
+    writeFile file: "roles/confluent.test/base-config.yml", text: """---
 provisioner:
   inventory:
     group_vars:
