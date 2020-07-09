@@ -25,13 +25,12 @@ def config = jobConfig {
 }
 
 def job = {
-    // Temp disable for testing
-    /*stage('Install Molecule and Latest Ansible') {
+    stage('Install Molecule and Latest Ansible') {
         sh '''
             sudo pip install --upgrade 'ansible==2.9.*'
             sudo pip install molecule docker
         '''
-    }*/
+    }
 
     def molecule_args = ""
     if(params.CONFLUENT_PACKAGE_BASEURL && params.CONFLUENT_PACKAGE_VERSION) {
@@ -74,7 +73,7 @@ provisioner:
         stage('Plaintext') {
             sh """
 cd roles/confluent.test
-echo molecule ${molecule_args} test -s plaintext-rhel
+molecule ${molecule_args} test -s plaintext-rhel
             """
         }
     }
