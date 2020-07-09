@@ -68,9 +68,8 @@ provisioner:
     withDockerServer([uri: dockerHost()]) {
         stage('Plaintext') {
             sh """
-                cd roles/confluent.test
-                cat base-config.yml
-                echo molecule ${molecule_args} test -s plaintext-rhel
+cd roles/confluent.test
+echo molecule ${molecule_args} test -s plaintext-rhel
             """
         }
     }
