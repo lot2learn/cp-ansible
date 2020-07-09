@@ -51,7 +51,8 @@ def job = {
             break
         }
 
-        writeFile file: "roles/confluent.test/base-config.yml", text: """---
+
+        def base_config = """---
 provisioner:
   inventory:
     group_vars:
@@ -62,6 +63,10 @@ provisioner:
         confluent_package_debian_suffix: "=${deb_suffix}"
         bootstrap: false
 """
+        echo "Optional parameters specified, overriding with base-config:\n${base_config}"
+
+        writeFile file: "roles/confluent.test/base-config.yml", text: base_config
+
         molecule_args = "--base-config base-config.yml"
     }
 
