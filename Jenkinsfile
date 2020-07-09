@@ -35,7 +35,7 @@ def job = {
 
     def rpm_suffix = ''
     def deb_suffix = ''
-    switch(config.confluent_release_quality) {
+    switch(parans.CONFLUENT_RELEASE_QUALITY) {
         case "prod":
             rpm_suffix = "${parans.CONFLUENT_PACKAGE_VERSION}-1"
             deb_suffix = "${parans.CONFLUENT_PACKAGE_VERSION}-1"
