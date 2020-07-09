@@ -33,23 +33,25 @@ def job = {
         '''
     }*/
 
-    def rpm_suffix = ''
-    def deb_suffix = ''
-    switch(params.CONFLUENT_RELEASE_QUALITY) {
-        case "prod":
-            rpm_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-1"
-            deb_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-1"
-        break
-        case "snapshot":
-            rpm_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-0.1.SNAPSHOT"
-            deb_suffix = "${params.CONFLUENT_PACKAGE_VERSION}~SNAPSHOT-1"
-        break
-        default:
-            error("Unknown release quality ${params.CONFLUENT_RELEASE_QUALITY}")
-        break
-    }
+    def molecule_args = ""
+    if(params.CONFLUENT_PACKAGE_BASEURL && params.CONFLUENT_PACKAGE_VERSION) {
+        def rpm_suffix = ''
+        def deb_suffix = ''
+        switch(params.CONFLUENT_RELEASE_QUALITY) {
+            case "prod":
+                rpm_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-1"
+                deb_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-1"
+            break
+            case "snapshot":
+                rpm_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-0.1.SNAPSHOT"
+                deb_suffix = "${params.CONFLUENT_PACKAGE_VERSION}~SNAPSHOT-1"
+            break
+            default:
+                error("Unknown release quality ${params.CONFLUENT_RELEASE_QUALITY}")
+            break
+        }
 
-    writeFile file: "roles/confluent.test/base-config.yml", text: """---
+        writeFile file: "roles/confluent.test/base-config.yml", text: """---
 provisioner:
   inventory:
     group_vars:
@@ -60,13 +62,16 @@ provisioner:
         confluent_package_debian_suffix: "=${deb_suffix}"
         bootstrap: false
 """
+        molecule_args = "--base-config base-config.yml"
+    }
 
     withDockerServer([uri: dockerHost()]) {
         stage('Plaintext') {
-            sh '''
+            sh """
                 cd roles/confluent.test
                 cat base-config.yml
-            '''
+                echo molecule ${molecule_args} test -s plaintext-rhel
+            """
         }
     }
 }
