@@ -35,17 +35,17 @@ def job = {
 
     def rpm_suffix = ''
     def deb_suffix = ''
-    switch(parans.CONFLUENT_RELEASE_QUALITY) {
+    switch(params.CONFLUENT_RELEASE_QUALITY) {
         case "prod":
-            rpm_suffix = "${parans.CONFLUENT_PACKAGE_VERSION}-1"
-            deb_suffix = "${parans.CONFLUENT_PACKAGE_VERSION}-1"
+            rpm_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-1"
+            deb_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-1"
         break
         case "snapshot":
-            rpm_suffix = "${parans.CONFLUENT_PACKAGE_VERSION}-0.1.SNAPSHOT"
-            deb_suffix = "${parans.CONFLUENT_PACKAGE_VERSION}~SNAPSHOT-1"
+            rpm_suffix = "${params.CONFLUENT_PACKAGE_VERSION}-0.1.SNAPSHOT"
+            deb_suffix = "${params.CONFLUENT_PACKAGE_VERSION}~SNAPSHOT-1"
         break
         default:
-            error("Unknown release quality ${config.confluent_release_quality}")
+            error("Unknown release quality ${params.CONFLUENT_RELEASE_QUALITY}")
         break
     }
 
@@ -55,7 +55,7 @@ provisioner:
     group_vars:
       all:
         confluent_common_repository_baseurl: "${params.CONFLUENT_PACKAGE_BASEURL}"
-        confluent_package_version: "${parans.CONFLUENT_PACKAGE_VERSION}"
+        confluent_package_version: "${params.CONFLUENT_PACKAGE_VERSION}"
         confluent_package_redhat_suffix: "-${rpm_suffix}"
         confluent_package_debian_suffix: "=${deb_suffix}"
         bootstrap: false
