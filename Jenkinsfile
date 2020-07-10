@@ -1,39 +1,5 @@
 #!/usr/bin/env groovy
 
-// XXX: Temp until https://github.com/confluentinc/jenkins-common/pull/272 is merged
-
-import com.cloudbees.groovy.cps.NonCPS
-
-@NonCPS
-def getLastSuccessfulBuildNumber(jobName) {
-    /* Find the last successful build for a job and return the build number */
-    def job = Jenkins.instance.getItemByFullName(jobName)
-    def build = job.getLastSuccessfulBuild()
-    return build.getNumber().toString()
-}
-
-@NonCPS
-def getMajorVersion(version) {
-    /*  Find the target branch for a job and return the major branch version
-        Eg: for 5.4.x targetBranch, returns 5.4
-    */
-    def errMsg = "Invalid version specified"
-    try {
-        def versionMatcher = version =~/v?(\d+).(\d+).(x|\d+)/
-        assert versionMatcher[0][1].isNumber()
-        assert versionMatcher[0][2].isNumber()
-        return version.tokenize(".")[0..1].join(".")
-    }
-    catch(IndexOutOfBoundsException ex) {
-        println(errMsg)
-        throw ex
-    }
-    catch(Exception ex) {
-        throw ex
-    }
-}
-// XXX: Temp until https://github.com/confluentinc/jenkins-common/pull/272 is merged
-
 def confluent_package_version = string(name: 'CONFLUENT_PACKAGE_VERSION',
     defaultValue: '',
     description: 'Confluent Version to install and test'
