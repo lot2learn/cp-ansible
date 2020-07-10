@@ -68,8 +68,6 @@ def job = {
                 ]
             ]
         ]
-        writeFile file: "roles/confluent.test/base-config.yml", text: base_config*/
-
         echo "Overriding Ansible vars for testing with base-config:\n" + prettyPrint(toJson(override_config))
 
         writeYaml file: "roles/confluent.test/base-config.yml", data: base_config
