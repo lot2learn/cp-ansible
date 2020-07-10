@@ -1,5 +1,7 @@
 #!/usr/bin/env groovy
 
+import static groovy.json.JsonOutput.*
+
 def confluent_package_version = string(name: 'CONFLUENT_PACKAGE_VERSION',
     defaultValue: '',
     description: 'Confluent Version to install and test'
@@ -56,6 +58,7 @@ def job = {
 
     def molecule_args = ""
     if(override_config) {
+        override_config['bootstrap'] = false
         def base_config = [
             'provisioner': [
                 'inventory': [
@@ -65,20 +68,9 @@ def job = {
                 ]
             ]
         ]
-        /*def base_config = """---
-provisioner:
-  inventory:
-    group_vars:
-      all:
-        confluent_common_repository_baseurl: "${params.CONFLUENT_PACKAGE_BASEURL}"
-        confluent_package_version: "${params.CONFLUENT_PACKAGE_VERSION}"
-        confluent_package_redhat_suffix: "-${rpm_suffix}"
-        confluent_package_debian_suffix: "=${deb_suffix}"
-        bootstrap: false
-"""
         writeFile file: "roles/confluent.test/base-config.yml", text: base_config*/
 
-        echo "Optional parameters specified, overriding with base-config:\n${base_config}"
+        echo "Overriding Ansible vars for testing with base-config:\n" + prettyPrint(toJson(override_config))
 
         writeYaml file: "roles/confluent.test/base-config.yml", data: base_config
 
@@ -89,10 +81,7 @@ provisioner:
         stage('Plaintext') {
             sh """
 cd roles/confluent.test
-if [ -f base-config.yml ]; then
-    cat base-config.yml
-fi
-echo molecule ${molecule_args} test -s plaintext-rhel
+molecule ${molecule_args} test -s plaintext-rhel
             """
         }
     }
